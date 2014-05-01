@@ -7,6 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepublish":   "coffee --bare --compile --output index.js index.coffee"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pgremo/eve2json.git"
+  },
   "author": "Patrick Gremo",
   "license": "MIT",
   "dependencies": {
