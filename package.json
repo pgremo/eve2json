@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepublish":   "coffee --bare --compile --output index.js index.coffee"
+    "prepublish":   "coffee --bare --compile --output . index.coffee"
   },
   "repository": {
     "type": "git",
