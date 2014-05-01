@@ -1,0 +1,16 @@
+{
+  "name": "eve2json",
+  "version": "0.0.0",
+  "description": "convert data from EVE Online to JSON",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish":   "coffee --bare --compile --output index.js index.coffee"
+  },
+  "author": "Patrick Gremo",
+  "license": "MIT",
+  "dependencies": {
+    "numeral": "^1.5.3",
+    "lodash": "^2.4.1"
+  }
+}
