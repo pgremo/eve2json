@@ -8,15 +8,15 @@ splitAndStrip = (s) ->
 
 matchLines = (regex, lines) ->
   matches = []
-  bad_lines = []
+  badLines = []
   for line in lines
     regex.lastIndex = 0
     match = line.match regex
     if match?
       matches.push match[1..]
     else
-      bad_lines.push line
-  [matches, bad_lines]
+      badLines.push line
+  [matches, badLines]
 
 ASSET_LIST = ///
    ^([\S\x20]*)                         # name
@@ -31,7 +31,7 @@ ASSET_LIST = ///
 ///
 
 module.exports.asset = (lines) ->
-  [matches, bad_lines] = matchLines ASSET_LIST, lines
+  [matches, badLines] = matchLines ASSET_LIST, lines
   result = for [name, quantity, _, group, _, category, _, size, _, slot, _, volume, _, meta_level, _, tech_level] in matches
     {
       name: name,
@@ -44,7 +44,7 @@ module.exports.asset = (lines) ->
       meta_level: meta_level,
       tech_level: tech_level
     }
-  [result, bad_lines]
+  [result, badLines]
 
 # 10 x Cargo Scanner II | 10x Cargo Scanner II | 10 Cargo Scanner II
 LISTING_RE = /^([\d,\.]+?)\x20?x?\x20([\S\x20]+)$/
@@ -54,9 +54,9 @@ LISTING_RE2 = /^([\S\x20]+?)\x20x?\x20?([\d,\.]+)$/
 LISTING_RE3 = /^([\S\x20]+)$/
 
 module.exports.list = (lines) ->
-  [matches, bad_lines] = matchLines LISTING_RE, lines
-  [matches2, bad_lines2] = matchLines LISTING_RE2, bad_lines
-  [matches3, bad_lines3] = matchLines LISTING_RE3, bad_lines2
+  [matches, badLines] = matchLines LISTING_RE, lines
+  [matches2, badLines2] = matchLines LISTING_RE2, badLines
+  [matches3, badLines3] = matchLines LISTING_RE3, badLines2
   result = []
   for [quantity, name] in matches
     result.push name: name.trim(), quantity: numeral().unformat(quantity) or 1
@@ -64,7 +64,7 @@ module.exports.list = (lines) ->
     result.push name: name.trim(), quantity: numeral().unformat(quantity) or 1
   for [name] in matches3
     result.push name: name.trim(), quantity: 1
-  [result, bad_lines3]
+  [result, badLines3]
 
 module.exports.parse = (raw) ->
   lines = splitAndStrip(raw)
