@@ -1,6 +1,6 @@
 {
   "name": "eve2json",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "convert data from EVE Online to JSON",
   "main": "index.js",
   "scripts": {
@@ -16,5 +16,8 @@
   "dependencies": {
     "numeral": "^1.5.3",
     "lodash": "^2.4.1"
+  },
+  "devDependencies": {
+    "coffee-script": "^1.7.1"
   }
 }
