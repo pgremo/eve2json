@@ -34,15 +34,15 @@ module.exports.asset = (lines) ->
   [matches, badLines] = matchLines ASSET_LIST, lines
   result = for [name, quantity, _, group, _, category, _, size, _, slot, _, volume, _, meta_level, _, tech_level] in matches
     {
-      name: name,
-      quantity: numeral().unformat(quantity) or 1,
-      group: group,
-      category: category,
-      size: size,
-      slot: slot,
-      volume: numeral().unformat(volume) or 0,
-      meta_level: meta_level,
-      tech_level: tech_level
+      name: name
+      quantity: numeral().unformat(quantity) or 1
+      group: group
+      category: category
+      size: size
+      slot: slot
+      volume: numeral().unformat(volume) or 0
+      metaLevel: meta_level
+      techLevel: tech_level
     }
   [result, badLines]
 
@@ -66,9 +66,9 @@ module.exports.list = (lines) ->
     result.push name: name.trim(), quantity: 1
   [result, badLines3]
 
-module.exports.parse = (raw) ->
+module.exports.parse = (raw, parsers) ->
   lines = splitAndStrip(raw)
-  parsers = [module.exports.asset, module.exports.list]
+  parsers = parsers ? [module.exports.asset, module.exports.list]
   result = while (parser = parsers.shift()) and lines
     [good, lines] = parser(lines)
     good

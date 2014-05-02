@@ -4,7 +4,7 @@
   "description": "convert data from EVE Online to JSON",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "gulp test --require coffee-script/register",
     "prepublish": "coffee --bare --compile --output . index.coffee"
   },
   "repository": {
@@ -18,6 +18,10 @@
     "lodash": "^2.4.1"
   },
   "devDependencies": {
-    "coffee-script": "^1.7.1"
+    "coffee-script": "^1.7.1",
+    "gulp": "^3.6.2",
+    "gulp-mocha": "^0.4.1",
+    "gulp-coffeelint": "^0.3.2",
+    "chai": "^1.9.1"
   }
 }
