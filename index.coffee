@@ -30,7 +30,7 @@ ASSET_LIST = ///
   (\t([\d]+|))?$                        # tech level
 ///
 
-module.exports.asset = (lines) ->
+module.exports.hanger = (lines) ->
   [matches, badLines] = matchLines ASSET_LIST, lines
   result = for [name, quantity, _, group, _, category, _, size, _, slot, _, volume, _, meta_level, _, tech_level] in matches
     {
@@ -54,22 +54,24 @@ LISTING_RE2 = /^([\S\x20]+?)\x20x?\x20?([\d,\.]+)$/
 LISTING_RE3 = /^([\S\x20]+)$/
 
 module.exports.list = (lines) ->
-  [matches, badLines] = matchLines LISTING_RE, lines
-  [matches2, badLines2] = matchLines LISTING_RE2, badLines
-  [matches3, badLines3] = matchLines LISTING_RE3, badLines2
   result = []
+
+  [matches, badLines] = matchLines LISTING_RE, lines
   for [quantity, name] in matches
     result.push name: name.trim(), quantity: numeral().unformat(quantity) or 1
-  for [name, quantity] in matches2
-    result.push name: name.trim(), quantity: numeral().unformat(quantity) or 1
-  for [name] in matches3
-    result.push name: name.trim(), quantity: 1
-  [result, badLines3]
 
-module.exports.parse = (raw, parsers) ->
-  lines = splitAndStrip(raw)
-  parsers = parsers ? [module.exports.asset, module.exports.list]
+  [matches, badLines] = matchLines LISTING_RE2, badLines
+  for [name, quantity] in matches
+    result.push name: name.trim(), quantity: numeral().unformat(quantity) or 1
+
+  [matches, badLines] = matchLines LISTING_RE3, badLines
+  for [name] in matches
+    result.push name: name.trim(), quantity: 1
+
+  [result, badLines]
+
+module.exports.parse = (raw, parsers = [module.exports.hanger, module.exports.list]) ->
+  lines = splitAndStrip raw
   result = while (parser = parsers.shift()) and lines
-    [good, lines] = parser(lines)
-    good
+    [good, lines] = parser lines; good
   [l.flatten(result), lines]
