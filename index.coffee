@@ -2,8 +2,8 @@ numeral = require 'numeral'
 l = require 'lodash'
 
 splitAndStrip = (s) ->
-  lines = for line in s.trim().replace(/\r\n|\n\r|\n|\r/g,'\n').split(/\n/)
-    line.trim().replace('\xa0', '').replace('\xc2', '')
+  lines = for line in s.replace(/\r\n|\n\r|\n|\r/g,'\n').split(/\n/)
+    line.replace('\xa0', '').replace('\xc2', '')
   line for line in lines when line?
 
 matchLines = (regex, lines) ->
@@ -47,30 +47,65 @@ module.exports.hanger = (lines) ->
   [result, badLines]
 
 # 10 x Cargo Scanner II | 10x Cargo Scanner II | 10 Cargo Scanner II
-LISTING_RE = /^([\d,\.]+?)\x20?x?\x20([\S\x20]+)$/
+LISTING1 = /^([\d,\.]+?)\x20?x?\x20([\S\x20]+)$/
 # Cargo Scanner II x10 | Cargo Scanner II x 10 | Cargo Scanner II 10
-LISTING_RE2 = /^([\S\x20]+?)\x20x?\x20?([\d,\.]+)$/
+LISTING2 = /^([\S\x20]+?)\x20x?\x20?([\d,\.]+)$/
 # Cargo Scanner II
-LISTING_RE3 = /^([\S\x20]+)$/
+LISTING3 = /^([\S\x20]+)$/
 
 module.exports.list = (lines) ->
   result = []
 
-  [matches, badLines] = matchLines LISTING_RE, lines
-  for [quantity, name] in matches
-    result.push name: name.trim(), quantity: numeral().unformat(quantity) or 1
+  [matches, lines] = matchLines LISTING1, lines
+  result.push (for [quantity, name] in matches
+    name: name.trim(), quantity: numeral().unformat(quantity) or 1)...
 
-  [matches, badLines] = matchLines LISTING_RE2, badLines
-  for [name, quantity] in matches
-    result.push name: name.trim(), quantity: numeral().unformat(quantity) or 1
+  [matches, lines] = matchLines LISTING2, lines
+  result.push (for [name, quantity] in matches
+    name: name.trim(), quantity: numeral().unformat(quantity) or 1)...
 
-  [matches, badLines] = matchLines LISTING_RE3, badLines
-  for [name] in matches
-    result.push name: name.trim(), quantity: 1
+  [matches, lines] = matchLines LISTING3, lines
+  result.push (for [name] in matches
+    name: name.trim(), quantity: 1)...
 
-  [result, badLines]
+  [result, lines]
 
-module.exports.parse = (raw, parsers = [module.exports.hanger, module.exports.list]) ->
+
+PI1 = ///
+  ^([\d,\.]+)\t             # quantity
+  ([\S\x20]+)\t             # name
+  (Routed|Not\x20routed)$   # routed
+///
+PI2 = ///
+  ^\t           # icon
+  ([\S\x20]+)\t # name
+  ([\d,\.]+)\t  # quantity
+  ([\d,\.]+)$   # volume
+///
+PI3 = ///
+  ^\t           # icon
+  ([\S\x20]+)\t # name
+  ([\d,\.]+)$   # quantity
+///
+
+module.exports.pi = (lines) ->
+  result = []
+
+  [matches, lines] = matchLines PI1, lines
+  result.push (for [quantity, name, routed] in matches
+    name: name.trim(), quantity: numeral().unformat(quantity) or 1, routed: routed is 'Routed')...
+
+  [matches, lines] = matchLines PI2, lines
+  result.push (for [name, quantity, volume] in matches
+    name: name.trim(), quantity: numeral().unformat(quantity) or 1, volume: numeral().unformat(volume) or 1)...
+
+  [matches, lines] = matchLines PI3, lines
+  result.push (for [name, quantity] in matches
+    name: name.trim(), quantity: numeral().unformat(quantity) or 1)...
+
+  return [result, lines]
+
+module.exports.parse = (raw, parsers = [module.exports.pi, module.exports.hanger, module.exports.list]) ->
   lines = splitAndStrip raw
   result = while (parser = parsers.shift()) and lines
     [good, lines] = parser lines; good
