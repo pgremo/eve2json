@@ -18,10 +18,11 @@
     "lodash": "^2.4.1"
   },
   "devDependencies": {
+    "chai": "^1.9.1",
     "coffee-script": "^1.7.1",
     "gulp": "^3.6.2",
-    "gulp-mocha": "^0.4.1",
+    "gulp-clean": "^0.2.4",
     "gulp-coffeelint": "^0.3.2",
-    "chai": "^1.9.1"
+    "gulp-mocha": "^0.4.1"
   }
 }
