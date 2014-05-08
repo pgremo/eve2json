@@ -1,6 +1,11 @@
 gulp = require 'gulp'
 mocha = require 'gulp-mocha'
 lint = require 'gulp-coffeelint'
+clean = require 'gulp-clean'
+
+gulp.task 'clean', ->
+  gulp.src 'index.js', read: false
+    .pipe clean()
 
 gulp.task 'lint', ->
   gulp

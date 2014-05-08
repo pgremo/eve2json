@@ -30,7 +30,7 @@ ASSET_LIST = ///
   (\t([\d]+|))?$                        # tech level
 ///
 
-module.exports.hanger = (lines) ->
+hanger = module.exports.hanger = (lines) ->
   [matches, badLines] = matchLines ASSET_LIST, lines
   result = for [name, quantity, _, group, _, category, _, size, _, slot, _, volume, _, meta_level, _, tech_level] in matches
     {
@@ -53,7 +53,7 @@ LISTING2 = /^([\S\x20]+?)\x20x?\x20?([\d,\.]+)$/
 # Cargo Scanner II
 LISTING3 = /^([\S\x20]+)$/
 
-module.exports.list = (lines) ->
+list = module.exports.list = (lines) ->
   result = []
 
   [matches, lines] = matchLines LISTING1, lines
@@ -88,7 +88,7 @@ PI3 = ///
   ([\d,\.]+)$   # quantity
 ///
 
-module.exports.pi = (lines) ->
+pi = module.exports.pi = (lines) ->
   result = []
 
   [matches, lines] = matchLines PI1, lines
@@ -105,7 +105,7 @@ module.exports.pi = (lines) ->
 
   return [result, lines]
 
-module.exports.parse = (raw, parsers = [module.exports.pi, module.exports.hanger, module.exports.list]) ->
+module.exports.parse = (raw, parsers = [pi, hanger, list]) ->
   lines = splitAndStrip raw
   result = while (parser = parsers.shift()) and lines
     [good, lines] = parser lines; good
